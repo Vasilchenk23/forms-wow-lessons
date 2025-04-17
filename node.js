@@ -22,10 +22,57 @@ function logToFile(message) {
   fs.appendFileSync('server.log', logMessage);
 }
 
-app.post('/send-lead', async (req, res) => {
-  const { name, email, message } = req.body;
+// app.post('/send-lead', async (req, res) => {
+//   const { name, email, message } = req.body;
 
-  logToFile(`Get data: name=${name}, email=${email}, message=${message}`);
+//   logToFile(`Get data: name=${name}, email=${email}, message=${message}`);
+
+//   const payload = {
+//     title: "Звернення з сайту wow-уроків",
+//     manager_comment: message,
+//     status_id: 86,
+//     manager_id: 3,
+//     pipeline_id: 8,
+//     source_id: 15,
+//     communicate_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
+//     contact: {
+//       full_name: name,
+//       email: email
+//     },
+//   };
+
+//   logToFile(`Send data in CRM: ${JSON.stringify(payload)}`);
+
+//   try {
+//     const response = await axios.post(
+//       'https://openapi.keycrm.app/v1/pipelines/cards',
+//       payload,
+//       {
+//         headers: {
+//           'Authorization': `Bearer ${process.env.CRM_API_TOKEN}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     logToFile(`Response on CRM: ${JSON.stringify(response.data)}`);
+
+//     res.json({ success: true, data: response.data });
+//   } catch (error) {
+//     if (error.response) {
+//       logToFile(`Error lead ${JSON.stringify(error.response.data)}`);
+//     } else {
+//       logToFile(`Error lead ${error.message}`);
+//     }
+    
+//     res.status(500).json({ success: false, error: error.response ? error.response.data : error.message });
+//   }
+// });
+
+app.post('/send-lead', async (req, res) => {
+  const { name, email, phone, message } = req.body;
+
+  logToFile(`Get data: name=${name}, email=${email}, phone=${phone}, message=${message}`);
 
   const payload = {
     title: "Звернення з сайту wow-уроків",
@@ -37,7 +84,8 @@ app.post('/send-lead', async (req, res) => {
     communicate_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
     contact: {
       full_name: name,
-      email: email
+      email: email,
+      phone: phone // <-- добавляем телефон
     },
   };
 
@@ -68,6 +116,7 @@ app.post('/send-lead', async (req, res) => {
     res.status(500).json({ success: false, error: error.response ? error.response.data : error.message });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server run ${PORT}`);
